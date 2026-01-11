@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: property-maintenance-api
+    env: docker
+    rootDir: apps/api
+    plan: starter
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: property-maintenance-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PORT
+        value: 4000
+      - key: CORS_ORIGIN
+        value: https://property-maintenance-web.onrender.com
+
+  - type: web
+    name: property-maintenance-web
+    env: docker
+    rootDir: apps/web
+    plan: starter
+    autoDeploy: true
+    envVars:
+      - key: NEXT_PUBLIC_API_BASE_URL
+        value: https://property-maintenance-api.onrender.com/api/v1
+
+databases:
+  - name: property-maintenance-db
+    plan: starter
+

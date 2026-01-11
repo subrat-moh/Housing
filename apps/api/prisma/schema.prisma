@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  OWNER
+  ADMIN
+  STAFF
+  VENDOR
+  FINANCE
+  SUPPORT
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  phone        String?
+  name         String?
+  passwordHash String
+  role         UserRole  @default(OWNER)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  properties   Property[]
+  tickets      Ticket[]  @relation("TicketCreatedBy")
+}
+
+model Property {
+  id           String   @id @default(cuid())
+  ownerId      String
+  label        String
+  addressLine1 String
+  addressLine2 String?
+  locality     String?
+  city         String
+  state        String
+  pincode      String
+  country      String   @default("IN")
+  propertyType String   @default("apartment")
+  status       String   @default("active")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  owner        User     @relation(fields: [ownerId], references: [id])
+  tickets      Ticket[]
+}
+
+model Plan {
+  id           String   @id @default(cuid())
+  name         String   @unique
+  setupFeeInr  Int
+  monthlyFeeInr Int
+  visitFrequencyPerMonth Int @default(1)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Ticket {
+  id          String   @id @default(cuid())
+  propertyId  String
+  createdById String
+  category    String
+  priority    String   @default("normal")
+  status      String   @default("new")
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  property    Property @relation(fields: [propertyId], references: [id])
+  createdBy   User     @relation("TicketCreatedBy", fields: [createdById], references: [id])
+}
+
