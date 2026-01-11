@@ -1,0 +1,2 @@
+Requirement for this project. 
+Build a Requirement specification which I want to build a product.   I need  to build a website for the People who have properties in India and want to take a service where they want my companies service to maintain the house for them. My company will provide a initial one time cost for setup of the technology , then every month subscription. In backend, I need to Build a comprehensive technical specification document for this from which we can build website and launch.
