@@ -75,13 +75,24 @@ If you want the **lowest ops/cost** for early MVP:
 For AWS, the simplest low-ops path is **Lightsail Containers** (cheaper/simpler than ECS for small MVPs).
 This repo includes Dockerfiles so you can deploy API + Web as containers behind a single domain.
 
-### AWS Lightsail Containers (high-level steps)
-- Build/push container images for `apps/api` and `apps/web` to a registry (ECR or Docker Hub).
-- Create a Lightsail Container Service and deploy both containers.
-- Use Lightsail managed database (or RDS Postgres) for production DB.
-- Set the environment variables:
+### AWS (recommended paths)
+
+#### Option 1: Lightsail Containers (usually cheapest on AWS)
+- Build/push images for `apps/api` and `apps/web` to **ECR** (or Docker Hub).
+- Create a **Lightsail Container Service**:
+  - Deploy `web` as the public endpoint (port 3000)
+  - Deploy `api` as a second container (port 4000)
+- Provision Postgres via **Lightsail Database** (or RDS).
+- Set env vars:
   - API: `DATABASE_URL`, `JWT_SECRET`, `CORS_ORIGIN`
-  - Web: `NEXT_PUBLIC_API_BASE_URL`
+  - Web: `NEXT_PUBLIC_API_BASE_URL` (point to the API public URL)
+
+#### Option 2: App Runner + RDS (simpler networking than Lightsail)
+- Push images to ECR.
+- Create an **RDS Postgres** instance.
+- Create two **App Runner** services (one for API, one for Web).
+- For API → RDS connectivity, use a **VPC Connector**.
+- Set env vars as above.
 
 ## What’s implemented right now (code)
 - **Auth**: email+password registration/login (JWT) for MVP
